@@ -1,4 +1,3 @@
-
 -- Config start
 local micromenuscale = 0.5
 local bagscale = 0.9
@@ -118,9 +117,13 @@ local FramesToHide = {
 	BonusActionBarTexture1,
 }
 
-for _, f in pairs(FramesToHide) do
-	f:SetScale(0.001)
-	f:SetAlpha(0)
+for _, v in pairs(FramesToHide) do
+	if(v:GetObjectType() == 'Texture') then
+		v:SetTexture(nil)
+	else
+		v:Hide()
+		v.Show = dummy
+	end
 end
 
 --bags
