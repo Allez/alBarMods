@@ -1,3 +1,4 @@
+
 -- Config start
 local micromenuscale = 0.5
 local bagscale = 0.9
@@ -85,13 +86,13 @@ MultiBarRight:SetParent(rightbar)
 ShapeshiftBarFrame:SetParent(shapeshiftbar)
 PetActionBarFrame:SetParent(petbar)
 Move(mainbar, "ActionButton", NUM_ACTIONBAR_BUTTONS, "H")
-Move(mainbar, "BonusActionButton", NUM_ACTIONBAR_BUTTONS, "H")
-Move(bottomleftbar, "MultiBarBottomLeftButton", NUM_ACTIONBAR_BUTTONS, "H")
-Move(bottomrightbar, "MultiBarBottomRightButton", NUM_ACTIONBAR_BUTTONS, "H")
-Move(leftbar, "MultiBarLeftButton", NUM_ACTIONBAR_BUTTONS, "V")
-Move(rightbar, "MultiBarRightButton", NUM_ACTIONBAR_BUTTONS, "V")
-Move(shapeshiftbar, "ShapeshiftButton", NUM_SHAPESHIFT_SLOTS, "H")
+Move(mainbar, "BonusActionButton", NUM_BONUS_ACTION_SLOTS, "H")
+Move(bottomleftbar, "MultiBarBottomLeftButton", NUM_MULTIBAR_BUTTONS, "H")
+Move(bottomrightbar, "MultiBarBottomRightButton", NUM_MULTIBAR_BUTTONS, "H")
+Move(leftbar, "MultiBarLeftButton", NUM_MULTIBAR_BUTTONS, "V")
+Move(rightbar, "MultiBarRightButton", NUM_MULTIBAR_BUTTONS, "V")
 Move(shapeshiftbar, "PossessButton", NUM_POSSESS_SLOTS, "H")
+Move(shapeshiftbar, "ShapeshiftButton", NUM_SHAPESHIFT_SLOTS, "H")
 Move(petbar, "PetActionButton", NUM_PET_ACTION_SLOTS, "H")
 
 MainMenuBarVehicleLeaveButton:SetScript("OnLoad", nil)
@@ -117,13 +118,9 @@ local FramesToHide = {
 	BonusActionBarTexture1,
 }
 
-for _, v in pairs(FramesToHide) do
-	if(v:GetObjectType() == 'Texture') then
-		v:SetTexture(nil)
-	else
-		v:Hide()
-		v.Show = dummy
-	end
+for _, f in pairs(FramesToHide) do
+	f:SetScale(0.001)
+	f:SetAlpha(0)
 end
 
 --bags
