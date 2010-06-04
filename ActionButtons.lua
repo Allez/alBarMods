@@ -13,6 +13,7 @@ local update_timer = 0.1
 
 
 local backdrop = {
+	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
 	edgeFile = [=[Interface\ChatFrame\ChatFrameBackground]=], edgeSize = 1,
 	insets = {top = 0, left = 0, bottom = 0, right = 0},
 }
@@ -87,7 +88,8 @@ local setStyle = function(bname)
 		bd:SetPoint("BOTTOMRIGHT", 0, 0)
 		bd:SetFrameStrata("BACKGROUND")
 		bd:SetBackdrop(backdrop)
-		bd:SetBackdropBorderColor(0, 0, 0)
+		bd:SetBackdropColor(0, 0, 0, 0.4)
+		bd:SetBackdropBorderColor(0, 0, 0, 1)
 		button.bd = bd
 		button:HookScript("OnEnter", function(self)
 			self.hover = true
