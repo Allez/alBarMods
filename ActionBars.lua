@@ -1,17 +1,16 @@
-
 -- Config start
 local micromenuscale = 0.5
 local bagscale = 0.9
-local size = 28
+local size = 27
 local spacing = 3
 local frame_positions = {
 	[1]  =  { a = "BOTTOM",         x = 0,    y = 12   },  -- MainBar
-	[2]  =  { a = "BOTTOM",         x = 0,    y = 74   },  -- MultiBarBottomLeftBar
-	[3]  =  { a = "BOTTOM",         x = 0,    y = 43   },  -- MultiBarBottomRightBar
-	[4]  =  { a = "RIGHT",          x = -43,  y = -150 },  -- MultiBarLeftBar
-	[5]  =  { a = "RIGHT",          x = -12,  y = -150 },  -- MultiBarRightBar
-	[6]  =  { a = "BOTTOM",         x = 0,    y = 105  },  -- PetBar
-	[7]  =  { a = "BOTTOM",         x = 280,  y = 175  },  -- ShapeShiftBar
+	[2]  =  { a = "BOTTOM",         x = 0,    y = 72   },  -- MultiBarBottomLeftBar
+	[3]  =  { a = "BOTTOM",         x = 0,    y = 42   },  -- MultiBarBottomRightBar
+	[4]  =  { a = "RIGHT",          x = -42,  y = -130 },  -- MultiBarLeftBar
+	[5]  =  { a = "RIGHT",          x = -12,  y = -130 },  -- MultiBarRightBar
+	[6]  =  { a = "BOTTOM",         x = 0,    y = 102  },  -- PetBar
+	[7]  =  { a = "BOTTOMLEFT",     x = 12,   y = 200  },  -- ShapeShiftBar
 	[8]  =  { a = "BOTTOMRIGHT",    x = 5,    y = -5   },  -- BagBar
 	[9]  =  { a = "TOPRIGHT",       x = -15,  y = -265 },  -- MicroMenuBar
 	[10] =  { a = "LEFT",           x = 251,  y = -6   },  -- VehicleBar
@@ -62,16 +61,13 @@ local petbar = CreateBarFrame("mod_PetBar", frame_positions[6])
 local shapeshiftbar = CreateBarFrame("mod_ShapeShiftBar", frame_positions[7])
 
 local bagbar = CreateBarFrame("mod_BagBar", frame_positions[8])
-bagbar:SetWidth(220)
-bagbar:SetHeight(60)
+bagbar:SetWidth(220, 60)
 
 local micromenubar = CreateBarFrame("mod_MicroMenuBar", frame_positions[9])
-micromenubar:SetWidth(263)
-micromenubar:SetHeight(60)
+micromenubar:SetSize(263, 60)
 
 local vehiclebar = CreateBarFrame("mod_VehicleBar", frame_positions[10])
-vehiclebar:SetWidth(70)
-vehiclebar:SetHeight(70) 
+vehiclebar:SetSize(50, 50)
 
 
 for i=1, NUM_ACTIONBAR_BUTTONS do
@@ -86,29 +82,33 @@ MultiBarRight:SetParent(rightbar)
 ShapeshiftBarFrame:SetParent(shapeshiftbar)
 PetActionBarFrame:SetParent(petbar)
 Move(mainbar, "ActionButton", NUM_ACTIONBAR_BUTTONS, "H")
-Move(mainbar, "BonusActionButton", NUM_BONUS_ACTION_SLOTS, "H")
-Move(bottomleftbar, "MultiBarBottomLeftButton", NUM_MULTIBAR_BUTTONS, "H")
-Move(bottomrightbar, "MultiBarBottomRightButton", NUM_MULTIBAR_BUTTONS, "H")
-Move(leftbar, "MultiBarLeftButton", NUM_MULTIBAR_BUTTONS, "V")
-Move(rightbar, "MultiBarRightButton", NUM_MULTIBAR_BUTTONS, "V")
+Move(mainbar, "BonusActionButton", NUM_ACTIONBAR_BUTTONS, "H")
+Move(bottomleftbar, "MultiBarBottomLeftButton", NUM_ACTIONBAR_BUTTONS, "H")
+Move(bottomrightbar, "MultiBarBottomRightButton", NUM_ACTIONBAR_BUTTONS, "H")
+Move(leftbar, "MultiBarLeftButton", NUM_ACTIONBAR_BUTTONS, "V")
+Move(rightbar, "MultiBarRightButton", NUM_ACTIONBAR_BUTTONS, "V")
 Move(shapeshiftbar, "PossessButton", NUM_POSSESS_SLOTS, "H")
 Move(shapeshiftbar, "ShapeshiftButton", NUM_SHAPESHIFT_SLOTS, "H")
 Move(petbar, "PetActionButton", NUM_PET_ACTION_SLOTS, "H")
 
-MainMenuBarVehicleLeaveButton:SetScript("OnLoad", nil)
-MainMenuBarVehicleLeaveButton:SetScript("OnEvent", nil)
-MainMenuBarVehicleLeaveButton:SetParent(vehiclebar)
-MainMenuBarVehicleLeaveButton:ClearAllPoints()
-MainMenuBarVehicleLeaveButton:SetPoint("CENTER", 0, 0)
-MainMenuBarVehicleLeaveButton:RegisterEvent("UNIT_ENTERED_VEHICLE")
-MainMenuBarVehicleLeaveButton:RegisterEvent("UNIT_EXITED_VEHICLE")
-MainMenuBarVehicleLeaveButton:SetScript("OnEvent", function(self, event, ...)
+local VehicleLeaveButton = CreateFrame("Button", "mod_VehicleLeaveButton", vehiclebar)
+VehicleLeaveButton:SetNormalTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up")
+VehicleLeaveButton:SetPushedTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
+VehicleLeaveButton:SetHighlightTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
+VehicleLeaveButton:SetAllPoints()
+VehicleLeaveButton:RegisterEvent("UNIT_ENTERED_VEHICLE")
+VehicleLeaveButton:RegisterEvent("UNIT_EXITED_VEHICLE")
+VehicleLeaveButton:SetScript("OnClick", function(self) 
+	VehicleExit()
+end)
+VehicleLeaveButton:SetScript("OnEvent", function(self)
 	if CanExitVehicle() then
 		self:Show()
 	else
 		self:Hide()
 	end
 end)
+VehicleLeaveButton:Hide()
 
 
 local FramesToHide = {
@@ -168,7 +168,7 @@ local function MoveMicroButtons(skinName)
 end
 hooksecurefunc("VehicleMenuBar_MoveMicroButtons", MoveMicroButtons)
 MoveMicroButtons()
-
+micromenubar:Hide()
 
 
 -- hide actionbuttons when the bonusbar is visible (rogue stealth and such)
