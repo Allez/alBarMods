@@ -1,7 +1,9 @@
 ## Interface: 30300
 ## Title: alBarMods
-## Author: Allez, roth
+## Author: Allez
 ## Notes: Action bar styling
+## Version 30300.1
+## Credits: roth
 
 ActionBars.lua
 ActionButtons.lua

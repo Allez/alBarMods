@@ -1,9 +1,7 @@
-
-local _G = _G
-  
 -- Config start
 local button_font = "Fonts\\FRIZQT__.TTF"
 local hide_hotkey = 1
+local update_timer = 0.1
 -- Config end
 
 
@@ -29,15 +27,41 @@ local modSetBorderColor = function(button)
 end
 
 local setStyle = function(bname)
-	if button.bd then return end
-
 	local button = _G[bname]
+
 	local icon   = _G[bname.."Icon"]
 	local flash  = _G[bname.."Flash"]
 	local count  = _G[bname.."Count"]
 	local border = _G[bname.."Border"]
 	local hotkey = _G[bname.."HotKey"]
 	local macro  = _G[bname.."Name"]
+
+	flash:SetTexture("")
+	button:SetHighlightTexture("")
+	button:SetPushedTexture("")
+	button:SetCheckedTexture("")
+	button:SetNormalTexture("")
+
+	if button.bd then return end
+	if border then
+		border:Hide()
+		border.Show = function() end
+	end
+
+	if macro then 
+		macro:Hide()
+		macro:SetFont(button_font, 10, "OUTLINE")
+	end
+
+	if hotkey and hide_hotkey == 1 then
+		hotkey:SetFont(button_font, 13, "OUTLINE")
+		hotkey:Hide()
+		hotkey.Show = function() end
+	end
+
+	if count then
+		count:SetFont(button_font, 14, "OUTLINE")
+	end
 
 	local bd = CreateFrame("Frame", nil, button)
 	bd:SetPoint("TOPLEFT", 0, 0)
@@ -56,26 +80,7 @@ local setStyle = function(bname)
 		self.hover = false
 		modSetBorderColor(self)
 	end)
-
-	if border then border:Hide() end
-	if macro then 
-		macro:Hide()
-		macro:SetFont(button_font, 10, "OUTLINE")
-	end
-	if hotkey and hide_hotkey == 1 then
-		hotkey:SetFont(button_font, 13, "OUTLINE")
-		hotkey:Hide()
-		hotkey.Show = function() end
-	end
-	if count then
-		count:SetFont(button_font, 14, "OUTLINE")
-	end
-
-	flash:SetTexture("")
-	button:SetHighlightTexture("")
-	button:SetPushedTexture("")
-	button:SetCheckedTexture("")
-	button:SetNormalTexture("")
+	
 	icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 	icon:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
 	icon:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
