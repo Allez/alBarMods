@@ -14,9 +14,13 @@ local frame_positions = {
 -- Config end
 
 
-local dummy = function() end
+local CreateBarFrame = function(name, pos)
+	local bar = CreateFrame("Frame", name, UIParent)
+	bar:SetPoint(pos.a, pos.x, pos.y)
+	return bar
+end
 
-local Move = function(bar, button, num, orient, pos)
+local Move = function(bar, button, num, orient, parent)
 	for i = 1, num do
 		_G[button..i]:ClearAllPoints()
 		_G[button..i]:SetWidth(size)
@@ -38,17 +42,46 @@ local Move = function(bar, button, num, orient, pos)
 		bar:SetWidth(size)
 		bar:SetHeight(size*num + spacing*(num-1))
 	end
-	if pos then
-		bar:SetPoint(pos.a, pos.x, pos.y)
-	end
 end
 
-local vehiclebar = CreateFrame("Frame", "mod_VehicleBar", UIParent)
+local bar1 = CreateBarFrame("mod_MainBar", frame_positions[1])
+local bar2 = CreateBarFrame("mod_MultiBarBottomLeftBar", frame_positions[2])
+local bar3 = CreateBarFrame("mod_MultiBarBottomRightBar", frame_positions[3])
+local bar4 = CreateBarFrame("mod_MultiBarLeftBar", frame_positions[4])
+local bar5 = CreateBarFrame("mod_MultiBarRightBar", frame_positions[5])
+local bar6 = CreateBarFrame("mod_PetBar", frame_positions[6])
+local bar7 = CreateBarFrame("mod_ShapeShiftBar", frame_positions[7])
+local bar8 = CreateBarFrame("mod_VehicleBar", frame_positions[8])
+vehiclebar:SetWidth(50)
+vehiclebar:SetHeight(50)
+
+for i = 1, 12 do
+	_G["ActionButton"..i]:SetParent(bar1)
+end
+BonusActionBarFrame:SetParent(bar1)
+MultiBarBottomLeft:SetParent(bar2)
+MultiBarBottomRight:SetParent(bar3)
+MultiBarLeft:SetParent(bar4)
+MultiBarRight:SetParent(bar5)
+PetActionBarFrame:SetParent(bar6)
+ShapeshiftBarFrame:SetParent(bar7)
+PossessBarFrame:SetParent(bar7)
+
+Move(bar1, "ActionButton", NUM_ACTIONBAR_BUTTONS, "H")
+Move(bar1, "BonusActionButton", NUM_BONUS_ACTION_SLOTS, "H")
+Move(bar2, "MultiBarBottomLeftButton", NUM_MULTIBAR_BUTTONS, "H")
+Move(bar3, "MultiBarBottomRightButton", NUM_MULTIBAR_BUTTONS, "H")
+Move(bar4, "MultiBarLeftButton", NUM_MULTIBAR_BUTTONS, "V")
+Move(bar5, "MultiBarRightButton", NUM_MULTIBAR_BUTTONS, "V")
+Move(bar7, "PossessButton", NUM_POSSESS_SLOTS, "H")
+Move(bar7, "ShapeshiftButton", NUM_SHAPESHIFT_SLOTS, "H")
+Move(bar6, "PetActionButton", NUM_PET_ACTION_SLOTS, "H")
 
 local VehicleLeaveButton = CreateFrame("Button", "mod_VehicleLeaveButton", vehiclebar)
 VehicleLeaveButton:SetNormalTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up")
 VehicleLeaveButton:SetPushedTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
 VehicleLeaveButton:SetHighlightTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
+VehicleLeaveButton:SetAllPoints()
 VehicleLeaveButton:RegisterEvent("UNIT_ENTERED_VEHICLE")
 VehicleLeaveButton:RegisterEvent("UNIT_EXITED_VEHICLE")
 VehicleLeaveButton:SetScript("OnClick", function(self) 
@@ -63,97 +96,33 @@ VehicleLeaveButton:SetScript("OnEvent", function(self)
 end)
 VehicleLeaveButton:Hide()
 
-Move(MainMenuBar, "ActionButton", NUM_ACTIONBAR_BUTTONS, "H", frame_positions[1])
-Move(MainMenuBar, "BonusActionButton", NUM_BONUS_ACTION_SLOTS, "H")
-Move(MultiBarBottomLeft, "MultiBarBottomLeftButton", NUM_MULTIBAR_BUTTONS, "H", frame_positions[2])
-Move(MultiBarBottomRight, "MultiBarBottomRightButton", NUM_MULTIBAR_BUTTONS, "H", frame_positions[3])
-Move(MultiBarLeft, "MultiBarLeftButton", NUM_MULTIBAR_BUTTONS, "V", frame_positions[4])
-Move(MultiBarRight, "MultiBarRightButton", NUM_MULTIBAR_BUTTONS, "V", frame_positions[5])
-Move(ShapeshiftBarFrame, "PossessButton", NUM_POSSESS_SLOTS, "H")
-Move(ShapeshiftBarFrame, "ShapeshiftButton", NUM_SHAPESHIFT_SLOTS, "H", frame_positions[7])
-Move(PetActionBarFrame, "PetActionButton", NUM_PET_ACTION_SLOTS, "H")
-Move(vehiclebar, "mod_VehicleLeaveButton", 1, "H", frame_positions[8])
-
-local FramesToHide = {
-	ReputationWatchBarTexture0,
-	ReputationWatchBarTexture1,
-	ReputationWatchBarTexture2,
-	ReputationWatchBarTexture3,
-	ReputationXPBarTexture0,
-	ReputationXPBarTexture1,
-	ReputationXPBarTexture2,
-	ReputationXPBarTexture3,
-	MainMenuXPBarTexture0,
-	MainMenuXPBarTexture1,
-	MainMenuXPBarTexture2,
-	MainMenuXPBarTexture3,
-	MainMenuMaxLevelBar0,
-	MainMenuMaxLevelBar1,
-	MainMenuMaxLevelBar2,
-	MainMenuMaxLevelBar3,
-	MainMenuBarTexture0,
-	MainMenuBarTexture1,
-	MainMenuBarTexture2,
-	MainMenuBarTexture3,
-	SlidingActionBarTexture0,	
+for _, obj in pairs({
+	SlidingActionBarTexture0,
 	SlidingActionBarTexture1,
-	BonusActionBarTexture0,
-	BonusActionBarTexture1,
-
-	ShapeshiftBarLeft,			
+	ShapeshiftBarLeft,
+	ShapeshiftBarRight,
 	ShapeshiftBarMiddle,
-	ShapeshiftBarRight,			
-	CharacterMicroButton,
-	SpellbookMicroButton,
-	TalentMicroButton,
-	AchievementMicroButton,
-	QuestLogMicroButton,
-	SocialsMicroButton,
-	PVPMicroButton,
-	LFDMicroButton,
-	MainMenuMicroButton,
-	HelpMicroButton,
-	MainMenuBarBackpackButton,
-	CharacterBag0Slot,
-	CharacterBag1Slot,
-	CharacterBag2Slot,
-	CharacterBag3Slot,
-	MainMenuBarPageNumber,
-	MainMenuBarPerformanceBarFrame,
-	ActionBarUpButton,
-	ActionBarDownButton,
-	KeyRingButton,
-	MainMenuBarLeftEndCap,
-	MainMenuBarRightEndCap,
-	ReputationWatchBar,
-	MainMenuExpBar,
-	ExhaustionTick,
-}
-
-for _, v in pairs(FramesToHide) do
-	if v:GetObjectType() == 'Texture' then
-		v:SetTexture(nil)
-		v.SetTexture = dummy
+	MainMenuBar,
+	VehicleMenuBar,
+}) do
+	if obj:GetObjectType() == 'Texture' then
+		obj:SetTexture(nil)
 	else
-		v:Hide()
-		v.Show = dummy
+		obj:Hide()
+		obj.Show = function() end
 	end
 end
 
-local bars = {
-	MainMenuBar,
-	MultiBarBottomLeft,
-	MultiBarBottomRight,
-	MultiBarLeft,
-	MultiBarRight,
-	PetActionBarFrame,
-	BonusActionBarFrame,
-	ShapeshiftBarFrame,
-	PossessBarFrame,
-}
+AchievementMicroButton_Update = function() end
+VehicleMenuBar_MoveMicroButtons = function() end
 
-for _, v in pairs(bars) do
-	UIPARENT_MANAGED_FRAME_POSITIONS[v] = nil
-end
-
-AchievementMicroButton_Update = dummy
+BonusActionBarFrame:HookScript("OnShow", function(self)
+	for i = 1, 12 do
+		_G["ActionButton"..i]:SetAlpha(0)
+	end
+end)
+BonusActionBarFrame:HookScript("OnHide", function(self)
+	for i = 1, 12 do
+		_G["ActionButton"..i]:SetAlpha(1)
+	end
+end)
