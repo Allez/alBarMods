@@ -2,17 +2,23 @@
 local size = 27
 local spacing = 3
 local frame_positions = {
-	["modMainBar"]          =  { a = "BOTTOM",     x = 0,    y = 12  },  -- MainBar
-	["MultiBarBottomLeft"]  =  { a = "BOTTOM",     x = 0,    y = 72  },  -- MultiBarBottomLeftBar
-	["MultiBarBottomRight"] =  { a = "BOTTOM",     x = 0,    y = 42  },  -- MultiBarBottomRightBar
-	["MultiBarLeft"]        =  { a = "RIGHT",      x = -42,  y = 0   },  -- MultiBarLeftBar
-	["MultiBarRight"]       =  { a = "RIGHT",      x = -12,  y = 0   },  -- MultiBarRightBar
-	["PetActionBarFrame"]   =  { a = "BOTTOM",     x = 0,    y = 102 },  -- PetBar
-	["ShapeshiftBarFrame"]  =  { a = "BOTTOMLEFT", x = 12,   y = 200 },  -- ShapeShiftBar
-	["modVehicleBar"]       =  { a = "LEFT",       x = 251,  y = -6  },  -- VehicleBar
+	[1]  =  { a = "BOTTOM",     x = 0,    y = 11  },  -- MainBar
+	[2]  =  { a = "BOTTOM",     x = 0,    y = 71  },  -- MultiBarBottomLeft
+	[3]  =  { a = "BOTTOM",     x = 0,    y = 41  },  -- MultiBarBottomRight
+	[4]  =  { a = "RIGHT",      x = -41,  y = 0   },  -- MultiBarLeft
+	[5]  =  { a = "RIGHT",      x = -11,  y = 0   },  -- MultiBarRight
+	[6]  =  { a = "BOTTOM",     x = 0,    y = 101 },  -- PetBar
+	[7]  =  { a = "BOTTOMLEFT", x = 12,   y = 210 },  -- ShapeShiftBar
+	[8]  =  { a = "LEFT",       x = 251,  y = -6  },  -- VehicleBar
 }
 -- Config end
 
+
+local CreateBarFrame = function(name, pos)
+	local bar = CreateFrame("Frame", name, UIParent)
+	bar:SetPoint(pos.a, pos.x, pos.y)
+	return bar
+end
 
 local Move = function(bar, button, num, orient, bsize)
 	local size = bsize or size
@@ -39,10 +45,16 @@ local Move = function(bar, button, num, orient, bsize)
 	end
 end
 
-local mainBar = CreateFrame("Frame", "modMainBar", UIParent)
-local vehicleBar = CreateFrame("Frame", "modVehicleBar", UIParent)
+local bar1 = CreateBarFrame("mod_MainBar", frame_positions[1])
+local bar2 = CreateBarFrame("mod_MultiBarBottomLeftBar", frame_positions[2])
+local bar3 = CreateBarFrame("mod_MultiBarBottomRightBar", frame_positions[3])
+local bar4 = CreateBarFrame("mod_MultiBarLeftBar", frame_positions[4])
+local bar5 = CreateBarFrame("mod_MultiBarRightBar", frame_positions[5])
+local bar6 = CreateBarFrame("mod_PetBar", frame_positions[6])
+local bar7 = CreateBarFrame("mod_ShapeShiftBar", frame_positions[7])
+local bar8 = CreateBarFrame("mod_VehicleBar", frame_positions[8])
 
-local VehicleLeaveButton = CreateFrame("Button", "VehicleLeaveButton1", vehicleBar)
+local VehicleLeaveButton = CreateFrame("Button", "VehicleLeaveButton1", UIParent)
 VehicleLeaveButton:SetNormalTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up")
 VehicleLeaveButton:SetPushedTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
 VehicleLeaveButton:SetHighlightTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
@@ -60,34 +72,37 @@ VehicleLeaveButton:SetScript("OnEvent", function(self)
 end)
 VehicleLeaveButton:Hide()
 
-for i = 1, 12 do
-	_G["ActionButton"..i]:SetParent(mainBar)
-end
-BonusActionBarFrame:SetParent(UIParent)
-MultiBarBottomLeft:SetParent(UIParent)
-MultiBarBottomRight:SetParent(UIParent)
-MultiBarLeft:SetParent(UIParent)
-MultiBarRight:SetParent(UIParent)
-PetActionBarFrame:SetParent(UIParent)
-ShapeshiftBarFrame:SetParent(UIParent)
-PossessBarFrame:SetParent(UIParent)
-
-for bar, pos in pairs(frame_positions) do
-	_G[bar]:ClearAllPoints()
-	_G[bar]:SetPoint(pos.a, pos.x, pos.y)
+for i = 1, NUM_ACTIONBAR_BUTTONS do
+	_G["ActionButton"..i]:SetParent(UIParent)
 end
 
-Move(mainBar, "ActionButton", NUM_ACTIONBAR_BUTTONS, "H")
-Move(mainBar, "BonusActionButton", NUM_BONUS_ACTION_SLOTS, "H")
-Move(MultiBarBottomLeft, "MultiBarBottomLeftButton", NUM_MULTIBAR_BUTTONS, "H")
-Move(MultiBarBottomRight, "MultiBarBottomRightButton", NUM_MULTIBAR_BUTTONS, "H")
-Move(MultiBarLeft, "MultiBarLeftButton", NUM_MULTIBAR_BUTTONS, "V")
-Move(MultiBarRight, "MultiBarRightButton", NUM_MULTIBAR_BUTTONS, "V")
-Move(ShapeshiftBarFrame, "PossessButton", NUM_POSSESS_SLOTS, "H")
-Move(PetActionBarFrame, "PetActionButton", NUM_PET_ACTION_SLOTS, "H")
-Move(vehicleBar, "VehicleLeaveButton", 1, "H", 50)
+for _, v in pairs({
+	BonusActionBarFrame,
+	MultiBarBottomLeft,
+	MultiBarBottomRight,
+	MultiBarLeft,
+	MultiBarRight,
+	PetActionBarFrame,
+	ShapeshiftBarFrame,
+}) do
+	v:SetParent(UIParent)
+	v:SetWidth(0.01)
+end
+
+Move(bar1, "ActionButton", NUM_ACTIONBAR_BUTTONS, "H")
+Move(bar1, "BonusActionButton", NUM_BONUS_ACTION_SLOTS, "H")
+Move(bar2, "MultiBarBottomLeftButton", NUM_MULTIBAR_BUTTONS, "H")
+Move(bar3, "MultiBarBottomRightButton", NUM_MULTIBAR_BUTTONS, "H")
+Move(bar4, "MultiBarLeftButton", NUM_MULTIBAR_BUTTONS, "V")
+Move(bar5, "MultiBarRightButton", NUM_MULTIBAR_BUTTONS, "V")
+Move(bar6, "PetActionButton", NUM_PET_ACTION_SLOTS, "H")
+Move(bar7, "ShapeshiftButton", NUM_SHAPESHIFT_SLOTS, "H")
+Move(bar8, "VehicleLeaveButton", 1, "H", 45)
+
 hooksecurefunc("ShapeshiftBar_Update", function()
-	Move(ShapeshiftBarFrame, "ShapeshiftButton", NUM_SHAPESHIFT_SLOTS, "H")
+	if GetNumShapeshiftForms() == 1 and not InCombatLockdown() then
+		ShapeshiftButton1:SetPoint("BOTTOMLEFT", bar7, "BOTTOMLEFT", 0, 0)
+	end
 end)
 
 for _, obj in pairs({
@@ -100,9 +115,10 @@ for _, obj in pairs({
 	ShapeshiftBarMiddle,
 	MainMenuBar,
 	VehicleMenuBar,
+	PossessBarFrame,
 }) do
 	if obj:GetObjectType() == 'Texture' then
-		obj:SetTexture(nil)
+		obj:SetTexture("")
 	else
 		obj:SetScale(0.001)
 		obj:SetAlpha(0)
@@ -110,7 +126,6 @@ for _, obj in pairs({
 end
 
 AchievementMicroButton_Update = function() end
-VehicleMenuBar_MoveMicroButtons = function() end
 
 BonusActionBarFrame:HookScript("OnShow", function(self)
 	for i = 1, 12 do

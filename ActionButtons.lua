@@ -1,6 +1,6 @@
 -- Config start
-local button_font = "Fonts\\FRIZQT__.TTF"
-local hide_hotkey = 1
+local button_font = 'Fonts\\VisitorR.TTF'
+local hide_hotkey = 0
 local update_timer = 0.1
 -- Config end
 
@@ -50,17 +50,23 @@ local setStyle = function(bname)
 
 	if macro then 
 		macro:Hide()
-		macro:SetFont(button_font, 10, "OUTLINE")
+		macro:SetFont(button_font, 10, "OUTLINEMONOCHROME")
 	end
 
-	if hotkey and hide_hotkey == 1 then
-		hotkey:SetFont(button_font, 13, "OUTLINE")
-		hotkey:Hide()
-		hotkey.Show = function() end
+	if hotkey then
+		hotkey:SetFont(button_font, 10, "OUTLINEMONOCHROME")
+		hotkey:ClearAllPoints()
+		hotkey:SetPoint("TOPRIGHT", button, "TOPRIGHT", 0, 2)
+		hotkey:SetPoint("TOPLEFT", button, "TOPLEFT", 0, 2)
+		if hide_hotkey == 1 then
+			hotkey:Hide()
+			hotkey.Show = function() end
+		end
 	end
 
 	if count then
-		count:SetFont(button_font, 14, "OUTLINE")
+		count:SetFont(button_font, 10, "OUTLINEMONOCHROME")
+		count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 2)
 	end
 
 	local bd = CreateFrame("Frame", nil, button)
@@ -212,6 +218,13 @@ local modActionButton_OnUpdate = function(self, elapsed)
 	end
 end
 
+local modActionButton_UpdateHotkeys = function(self)
+	local hotkey = _G[self:GetName().."HotKey"]
+	hotkey:ClearAllPoints()
+	hotkey:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 2)
+	hotkey:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 2)
+end
+
 hooksecurefunc("ActionButton_Update",   modActionButton_Update)
 hooksecurefunc("ActionButton_UpdateUsable",   modActionButton_UpdateUsable)
 hooksecurefunc("ActionButton_UpdateState",   modActionButton_UpdateState)
@@ -219,6 +232,7 @@ hooksecurefunc("ActionButtonDown", modActionButtonDown)
 hooksecurefunc("ActionButtonUp", modActionButtonUp)
 hooksecurefunc("MultiActionButtonDown", modMultiActionButtonDown)
 hooksecurefunc("MultiActionButtonUp", modMultiActionButtonUp)
+hooksecurefunc("ActionButton_UpdateHotkeys", modActionButton_UpdateHotkeys)
   
 ActionButton_OnUpdate = modActionButton_OnUpdate
 hooksecurefunc("ShapeshiftBar_OnLoad",   modShapeshiftBar_UpdateState)

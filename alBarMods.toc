@@ -1,5 +1,5 @@
 ## Interface: 30300
-## Title: alBarMods
+## Title: |cff777777al|rBarMods
 ## Author: Allez
 ## Notes: Action bar styling
 ## Version 30300.1
