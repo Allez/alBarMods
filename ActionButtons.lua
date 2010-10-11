@@ -1,7 +1,7 @@
 -- Config start
 local button_font = 'Fonts\\VisitorR.TTF'
 local hide_hotkey = 0
-local update_timer = 0.1
+local update_timer = TOOLTIP_UPDATE_TIME
 -- Config end
 
 local LibKeyBound = LibStub("LibKeyBound-1.0")
@@ -27,23 +27,22 @@ local modSetBorderColor = function(button)
 	end
 end
 
+local hideTex = function(button)
+	_G[button:GetName().."Flash"]:SetTexture("")
+	button:SetHighlightTexture("")
+	button:SetPushedTexture("")
+	button:SetCheckedTexture("")
+	button:SetNormalTexture("")
+end
+
 local setStyle = function(bname)
 	local button = _G[bname]
-
 	local icon   = _G[bname.."Icon"]
-	local flash  = _G[bname.."Flash"]
 	local count  = _G[bname.."Count"]
 	local border = _G[bname.."Border"]
 	local hotkey = _G[bname.."HotKey"]
 	local macro  = _G[bname.."Name"]
 
-	flash:SetTexture("")
-	button:SetHighlightTexture("")
-	button:SetPushedTexture("")
-	button:SetCheckedTexture("")
-	button:SetNormalTexture("")
-
-	if button.bd then return end
 	if border then
 		border:Hide()
 		border.Show = function() end
@@ -70,17 +69,16 @@ local setStyle = function(bname)
 		count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 2)
 	end
 
-	local bd = CreateFrame("Frame", nil, button)
-	bd:SetPoint("TOPLEFT", 0, 0)
-	bd:SetPoint("BOTTOMRIGHT", 0, 0)
-	bd:SetFrameStrata("BACKGROUND")
-	bd:SetBackdrop(backdrop)
-	bd:SetBackdropColor(0, 0, 0, 0.4)
-	bd:SetBackdropBorderColor(0, 0, 0, 1)
-	button.bd = bd
+	button.bd = CreateFrame("Frame", nil, button)
+	button.bd:SetPoint("TOPLEFT", 0, 0)
+	button.bd:SetPoint("BOTTOMRIGHT", 0, 0)
+	button.bd:SetFrameLevel(button:GetFrameLevel() - 1)
+	button.bd:SetBackdrop(backdrop)
+	button.bd:SetBackdropColor(0, 0, 0, 0.4)
+	button.bd:SetBackdropBorderColor(0, 0, 0, 1)
 
 	button.GetHotkey = function()
-		return LibKeyBound:ToShortKey(GetBindingKey(button.buttonType..button:GetID()) or GetBindingKey("CLICK "..bname..":LeftButton"))
+		return LibKeyBound:ToShortKey(GetBindingKey(button.buttonType..button:GetID()) or GetBindingKey("CLICK "..button:GetName()..":LeftButton"))
 	end
 	
 	button:HookScript("OnEnter", function(self)
@@ -149,7 +147,7 @@ local modActionButton_Update = function(self)
 	local action = self.action
 	local name = self:GetName()
 
-	setStyle(name)
+	hideTex(self)
 	if IsEquippedAction(action) then
 		self.equipped = true
 	else
@@ -163,7 +161,7 @@ local modPetActionBar_Update = function()
 		local name = "PetActionButton"..i
 		local button  = _G[name]
 
-		setStyle(name)
+		hideTex(button)
 		local name, subtext, texture, isToken, isActive, autoCastAllowed, autoCastEnabled = GetPetActionInfo(i)
 		if isActive then
 			button.checked = true
@@ -179,7 +177,7 @@ local modShapeshiftBar_UpdateState = function()
 		local name = "ShapeshiftButton"..i
 		local button  = _G[name]
   
-		setStyle(name)
+		hideTex(button)
 		local texture, name, isActive, isCastable = GetShapeshiftFormInfo(i)
 		if isActive then
 			button.checked = true
@@ -234,6 +232,38 @@ local modActionButton_UpdateHotkeys = function(self)
 	hotkey:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 2)
 end
 
+for i = 1, 12 do
+	setStyle("ActionButton"..i)
+end
+
+for i=1, 12 do
+	setStyle("BonusActionButton"..i)
+end
+
+for i= 1, 12 do
+	setStyle("MultiBarRightButton"..i)
+end
+
+for i= 1, 12 do
+	setStyle("MultiBarBottomRightButton"..i)
+end  
+
+for i= 1, 12 do
+	setStyle("MultiBarLeftButton"..i)
+end
+
+for i=1, 12 do
+	setStyle("MultiBarBottomLeftButton"..i)
+end
+
+for i=1, 10 do
+	setStyle("ShapeshiftButton"..i)
+end
+
+for i=1, 10 do
+	setStyle("PetActionButton"..i)
+end
+
 hooksecurefunc("ActionButton_Update",   modActionButton_Update)
 hooksecurefunc("ActionButton_UpdateUsable",   modActionButton_UpdateUsable)
 hooksecurefunc("ActionButton_UpdateState",   modActionButton_UpdateState)
@@ -242,8 +272,7 @@ hooksecurefunc("ActionButtonUp", modActionButtonUp)
 hooksecurefunc("MultiActionButtonDown", modMultiActionButtonDown)
 hooksecurefunc("MultiActionButtonUp", modMultiActionButtonUp)
 hooksecurefunc("ActionButton_UpdateHotkeys", modActionButton_UpdateHotkeys)
-  
-ActionButton_OnUpdate = modActionButton_OnUpdate
 hooksecurefunc("ShapeshiftBar_OnLoad",   modShapeshiftBar_UpdateState)
 hooksecurefunc("ShapeshiftBar_UpdateState",   modShapeshiftBar_UpdateState)
 hooksecurefunc("PetActionBar_Update",   modPetActionBar_Update)
+ActionButton_OnUpdate = modActionButton_OnUpdate
