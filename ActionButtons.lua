@@ -4,6 +4,7 @@ local hide_hotkey = 0
 local update_timer = 0.1
 -- Config end
 
+local LibKeyBound = LibStub("LibKeyBound-1.0")
 
 local backdrop = {
 	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
@@ -78,9 +79,16 @@ local setStyle = function(bname)
 	bd:SetBackdropBorderColor(0, 0, 0, 1)
 	button.bd = bd
 
+	button.GetHotkey = function()
+		return LibKeyBound:ToShortKey(GetBindingKey(button.buttonType..button:GetID()) or GetBindingKey("CLICK "..bname..":LeftButton"))
+	end
+	
 	button:HookScript("OnEnter", function(self)
 		self.hover = true
 		modSetBorderColor(self)
+		if self.GetHotkey then
+			LibKeyBound:Set(self)
+		end
 	end)
 	button:HookScript("OnLeave", function(self)
 		self.hover = false
