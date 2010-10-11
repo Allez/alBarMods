@@ -5,5 +5,6 @@
 ## Version 30300.1
 ## Credits: roth
 
+embeds.xml
 ActionBars.lua
 ActionButtons.lua
