@@ -241,8 +241,7 @@ end
 local modActionButton_UpdateHotkeys = function(self)
 	local hotkey = _G[self:GetName().."HotKey"]
 	if self.GetHotkey then
-		local key = self:GetHotkey()
-		hotkey:SetText(key)
+		hotkey:SetText(self:GetHotkey())
 	end
 	hotkey:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 2)
 	hotkey:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 2)
