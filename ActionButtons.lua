@@ -36,12 +36,14 @@ local hideTex = function(button)
 end
 
 local setStyle = function(bname)
-	local button = _G[bname]
-	local icon   = _G[bname.."Icon"]
-	local count  = _G[bname.."Count"]
-	local border = _G[bname.."Border"]
-	local hotkey = _G[bname.."HotKey"]
-	local macro  = _G[bname.."Name"]
+	local button    = _G[bname]
+	local icon      = _G[bname.."Icon"]
+	local count     = _G[bname.."Count"]
+	local border    = _G[bname.."Border"]
+	local hotkey    = _G[bname.."HotKey"]
+	local macro     = _G[bname.."Name"]
+	local cooldown  = _G[bname.."Cooldown"]
+	local autocast  = _G[bname.."AutoCastable"]
 
 	if border then
 		border:Hide()
@@ -69,6 +71,17 @@ local setStyle = function(bname)
 		count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 2)
 	end
 
+	if cooldown then
+		cooldown:ClearAllPoints()
+		cooldown:SetAllPoints(button)
+	end
+
+	if autocast then
+		autocast:SetTexCoord(0.26, 0.75, 0.26, 0.75)
+		autocast:SetPoint("TOPLEFT", 1, -1)
+		autocast:SetPoint("BOTTOMRIGHT", -1, 1)
+	end
+
 	button.bd = CreateFrame("Frame", nil, button)
 	button.bd:SetPoint("TOPLEFT", 0, 0)
 	button.bd:SetPoint("BOTTOMRIGHT", 0, 0)
@@ -78,7 +91,8 @@ local setStyle = function(bname)
 	button.bd:SetBackdropBorderColor(0, 0, 0, 1)
 
 	button.GetHotkey = function()
-		return LibKeyBound:ToShortKey(GetBindingKey(button.buttonType..button:GetID()) or GetBindingKey("CLICK "..button:GetName()..":LeftButton"))
+		local actionButtonType = button.buttonType or "ACTIONBUTON"
+		return LibKeyBound:ToShortKey(GetBindingKey(actionButtonType..button:GetID()) or GetBindingKey("CLICK "..button:GetName()..":LeftButton"))
 	end
 	
 	button:HookScript("OnEnter", function(self)
@@ -226,8 +240,10 @@ end
 
 local modActionButton_UpdateHotkeys = function(self)
 	local hotkey = _G[self:GetName().."HotKey"]
-	local key = self.GetHotkey()
-	hotkey:SetText(key)
+	if self.GetHotkey then
+		local key = self:GetHotkey()
+		hotkey:SetText(key)
+	end
 	hotkey:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 2)
 	hotkey:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 2)
 end
