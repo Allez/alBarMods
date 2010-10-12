@@ -156,7 +156,7 @@ local modActionButton_UpdateState = function(button)
 	end
 	modSetBorderColor(button)
 end
-  
+
 local modActionButton_Update = function(self)
 	local action = self.action
 	local name = self:GetName()
@@ -169,7 +169,18 @@ local modActionButton_Update = function(self)
 	end
 	modSetBorderColor(self)
 end
-  
+
+local modActionButton_UpdateFlyout = function(self)
+	local actionType = GetActionInfo(self.action)
+	if actionType == "flyout" then
+		self.FlyoutBorder:SetAlpha(0)
+		self.FlyoutBorderShadow:SetAlpha(0)
+		SpellFlyoutHorizontalBackground:SetAlpha(0)
+		SpellFlyoutVerticalBackground:SetAlpha(0)
+		SpellFlyoutBackgroundEnd:SetAlpha(0)
+	end
+end
+
 local modPetActionBar_Update = function()
 	for i=1, NUM_PET_ACTION_SLOTS do
 		local name = "PetActionButton"..i
@@ -185,7 +196,7 @@ local modPetActionBar_Update = function()
 		modSetBorderColor(button)
 	end  
 end
-  
+
 local modShapeshiftBar_UpdateState = function()    
 	for i=1, NUM_SHAPESHIFT_SLOTS do
 		local name = "ShapeshiftButton"..i
@@ -279,15 +290,16 @@ for i=1, 10 do
 	setStyle("PetActionButton"..i)
 end
 
-hooksecurefunc("ActionButton_Update",   modActionButton_Update)
-hooksecurefunc("ActionButton_UpdateUsable",   modActionButton_UpdateUsable)
-hooksecurefunc("ActionButton_UpdateState",   modActionButton_UpdateState)
+hooksecurefunc("ActionButton_Update", modActionButton_Update)
+hooksecurefunc("ActionButton_UpdateUsable", modActionButton_UpdateUsable)
+hooksecurefunc("ActionButton_UpdateState", modActionButton_UpdateState)
+hooksecurefunc("ActionButton_UpdateFlyout", modActionButton_UpdateFlyout)
 hooksecurefunc("ActionButtonDown", modActionButtonDown)
 hooksecurefunc("ActionButtonUp", modActionButtonUp)
 hooksecurefunc("MultiActionButtonDown", modMultiActionButtonDown)
 hooksecurefunc("MultiActionButtonUp", modMultiActionButtonUp)
 hooksecurefunc("ActionButton_UpdateHotkeys", modActionButton_UpdateHotkeys)
-hooksecurefunc("ShapeshiftBar_OnLoad",   modShapeshiftBar_UpdateState)
-hooksecurefunc("ShapeshiftBar_UpdateState",   modShapeshiftBar_UpdateState)
-hooksecurefunc("PetActionBar_Update",   modPetActionBar_Update)
+hooksecurefunc("ShapeshiftBar_OnLoad", modShapeshiftBar_UpdateState)
+hooksecurefunc("ShapeshiftBar_UpdateState", modShapeshiftBar_UpdateState)
+hooksecurefunc("PetActionBar_Update", modPetActionBar_Update)
 ActionButton_OnUpdate = modActionButton_OnUpdate
