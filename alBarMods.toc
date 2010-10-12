@@ -1,8 +1,8 @@
-## Interface: 30300
+## Interface: 40000
 ## Title: |cff777777al|rBarMods
 ## Author: Allez
-## Notes: Action bar styling
-## Version 30300.1
+## Notes: Action bar mod
+## Version 40000.1
 ## Credits: roth
 
 embeds.xml
