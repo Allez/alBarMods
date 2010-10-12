@@ -2,14 +2,14 @@
 local size = 27
 local spacing = 3
 local frame_positions = {
-	[1]  =  { a = "BOTTOM",     x = 0,    y = 11  },  -- MainBar
-	[2]  =  { a = "BOTTOM",     x = 0,    y = 71  },  -- MultiBarBottomLeft
-	[3]  =  { a = "BOTTOM",     x = 0,    y = 41  },  -- MultiBarBottomRight
-	[4]  =  { a = "RIGHT",      x = -41,  y = 0   },  -- MultiBarLeft
-	[5]  =  { a = "RIGHT",      x = -11,  y = 0   },  -- MultiBarRight
-	[6]  =  { a = "BOTTOM",     x = 0,    y = 101 },  -- PetBar
-	[7]  =  { a = "BOTTOMLEFT", x = 12,   y = 210 },  -- ShapeShiftBar
-	[8]  =  { a = "LEFT",       x = 251,  y = -6  },  -- VehicleBar
+	[1]	=	{ a = "BOTTOM",     x = 0,   y = 11  },	-- MainBar
+	[2]	=	{ a = "BOTTOM",     x = 0,   y = 71  },	-- MultiBarBottomLeft
+	[3]	=	{ a = "BOTTOM",     x = 0,	 y = 41  },	-- MultiBarBottomRight
+	[4]	=	{ a = "RIGHT",      x = -41, y = 0   },	-- MultiBarLeft
+	[5]	=	{ a = "RIGHT",      x = -11, y = 0   },	-- MultiBarRight
+	[6]	=	{ a = "BOTTOM",     x = 0,   y = 101 },	-- PetBar
+	[7]	=	{ a = "BOTTOMLEFT", x = 12,  y = 210 },	-- ShapeShiftBar
+	[8]	=	{ a = "LEFT",       x = 251, y = -6  },	-- VehicleBar
 }
 -- Config end
 
@@ -135,5 +135,20 @@ end)
 BonusActionBarFrame:HookScript("OnHide", function(self)
 	for i = 1, 12 do
 		_G["ActionButton"..i]:SetAlpha(1)
+	end
+end)
+
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+frame:SetScript("OnEvent", function(self, event)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")	
+	ActionButton_HideGrid = function() end
+	for i = 1, 12 do
+		ActionButton_ShowGrid(_G["ActionButton"..i])
+		ActionButton_ShowGrid(_G["BonusActionButton"..i])
+		ActionButton_ShowGrid(_G["MultiBarRightButton"..i])
+		ActionButton_ShowGrid(_G["MultiBarLeftButton"..i])
+		ActionButton_ShowGrid(_G["MultiBarBottomRightButton"..i])
+		ActionButton_ShowGrid(_G["MultiBarBottomLeftButton"..i])
 	end
 end)
