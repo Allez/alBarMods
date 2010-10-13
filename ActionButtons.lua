@@ -77,7 +77,7 @@ local setStyle = function(bname)
 	end
 
 	if autocast then
-		autocast:SetTexCoord(0.26, 0.75, 0.26, 0.75)
+		autocast:SetTexCoord(0.24, 0.75, 0.24, 0.75)
 		autocast:SetPoint("TOPLEFT", 1, -1)
 		autocast:SetPoint("BOTTOMRIGHT", -1, 1)
 	end
