@@ -58,8 +58,8 @@ local setStyle = function(bname)
 	if hotkey then
 		hotkey:SetFont(button_font, 10, "OUTLINEMONOCHROME")
 		hotkey:ClearAllPoints()
-		hotkey:SetPoint("TOPRIGHT", button, "TOPRIGHT", 0, 2)
-		hotkey:SetPoint("TOPLEFT", button, "TOPLEFT", 0, 2)
+		hotkey:SetPoint("TOPRIGHT", button, "TOPRIGHT", 0, 1)
+		hotkey:SetPoint("TOPLEFT", button, "TOPLEFT", 0, 1)
 		if hide_hotkey == 1 then
 			hotkey:Hide()
 			hotkey.Show = function() end
@@ -254,8 +254,8 @@ local modActionButton_UpdateHotkeys = function(self)
 	if self.GetHotkey then
 		hotkey:SetText(self:GetHotkey())
 	end
-	hotkey:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 2)
-	hotkey:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 2)
+	hotkey:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 1)
+	hotkey:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 1)
 end
 
 for i = 1, 12 do

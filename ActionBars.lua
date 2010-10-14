@@ -145,6 +145,7 @@ frame:SetScript("OnEvent", function(self, event)
 	ActionButton_HideGrid = function() end
 	for i = 1, 12 do
 		ActionButton_ShowGrid(_G["ActionButton"..i])
+		_G["ActionButton"..i]:SetAttribute("showgrid", 1)
 		ActionButton_ShowGrid(_G["BonusActionButton"..i])
 		ActionButton_ShowGrid(_G["MultiBarRightButton"..i])
 		ActionButton_ShowGrid(_G["MultiBarLeftButton"..i])
