@@ -15,12 +15,12 @@ local frame_positions = {
 
 
 local CreateBarFrame = function(name, pos)
-	local bar = CreateFrame("Frame", name, UIParent)
+	local bar = CreateFrame("Frame", name, UIParent, "SecureHandlerStateTemplate")
 	bar:SetPoint(pos.a, pos.x, pos.y)
 	return bar
 end
 
-local Move = function(bar, button, num, orient, bsize)
+local SetButtons = function(bar, button, num, orient, bsize)
 	local size = bsize or size
 	for i = 1, num do
 		_G[button..i]:ClearAllPoints()
@@ -72,12 +72,7 @@ VehicleLeaveButton:SetScript("OnEvent", function(self)
 end)
 VehicleLeaveButton:Hide()
 
-for i = 1, NUM_ACTIONBAR_BUTTONS do
-	_G["ActionButton"..i]:SetParent(UIParent)
-end
-
 for _, v in pairs({
-	BonusActionBarFrame,
 	MultiBarBottomLeft,
 	MultiBarBottomRight,
 	MultiBarLeft,
@@ -89,15 +84,14 @@ for _, v in pairs({
 	v:SetWidth(0.01)
 end
 
-Move(bar1, "ActionButton", NUM_ACTIONBAR_BUTTONS, "H")
-Move(bar1, "BonusActionButton", NUM_BONUS_ACTION_SLOTS, "H")
-Move(bar2, "MultiBarBottomLeftButton", NUM_MULTIBAR_BUTTONS, "H")
-Move(bar3, "MultiBarBottomRightButton", NUM_MULTIBAR_BUTTONS, "H")
-Move(bar4, "MultiBarLeftButton", NUM_MULTIBAR_BUTTONS, "V")
-Move(bar5, "MultiBarRightButton", NUM_MULTIBAR_BUTTONS, "V")
-Move(bar6, "PetActionButton", NUM_PET_ACTION_SLOTS, "H")
-Move(bar7, "ShapeshiftButton", NUM_SHAPESHIFT_SLOTS, "H")
-Move(bar8, "VehicleLeaveButton", 1, "H", 45)
+SetButtons(bar1, "ActionButton", NUM_ACTIONBAR_BUTTONS, "H")
+SetButtons(bar2, "MultiBarBottomLeftButton", NUM_MULTIBAR_BUTTONS, "H")
+SetButtons(bar3, "MultiBarBottomRightButton", NUM_MULTIBAR_BUTTONS, "H")
+SetButtons(bar4, "MultiBarLeftButton", NUM_MULTIBAR_BUTTONS, "V")
+SetButtons(bar5, "MultiBarRightButton", NUM_MULTIBAR_BUTTONS, "V")
+SetButtons(bar6, "PetActionButton", NUM_PET_ACTION_SLOTS, "H")
+SetButtons(bar7, "ShapeshiftButton", NUM_SHAPESHIFT_SLOTS, "H")
+SetButtons(bar8, "VehicleLeaveButton", 1, "H", 45)
 
 hooksecurefunc("ShapeshiftBar_Update", function()
 	if GetNumShapeshiftForms() == 1 and not InCombatLockdown() then
@@ -108,8 +102,9 @@ end)
 for _, obj in pairs({
 	SlidingActionBarTexture0,
 	SlidingActionBarTexture1,
-	BonusActionBarTexture0,
-	BonusActionBarTexture1,
+	BonusActionBarFrameTexture0,
+	BonusActionBarFrameTexture1,
+	BonusActionBarFrame,
 	ShapeshiftBarLeft,
 	ShapeshiftBarRight,
 	ShapeshiftBarMiddle,
@@ -125,31 +120,105 @@ for _, obj in pairs({
 	end
 end
 
-AchievementMicroButton_Update = function() end
-
-BonusActionBarFrame:HookScript("OnShow", function(self)
-	for i = 1, 12 do
-		_G["ActionButton"..i]:SetAlpha(0)
-	end
-end)
-BonusActionBarFrame:HookScript("OnHide", function(self)
-	for i = 1, 12 do
-		_G["ActionButton"..i]:SetAlpha(1)
-	end
-end)
-
 local frame = CreateFrame("Frame")
-frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+frame:RegisterEvent("PLAYER_LOGIN")
 frame:SetScript("OnEvent", function(self, event)
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")	
 	ActionButton_HideGrid = function() end
 	for i = 1, 12 do
-		ActionButton_ShowGrid(_G["ActionButton"..i])
 		_G["ActionButton"..i]:SetAttribute("showgrid", 1)
+		ActionButton_ShowGrid(_G["ActionButton"..i])
+		_G["BonusActionButton"..i]:SetAttribute("showgrid", 1)
 		ActionButton_ShowGrid(_G["BonusActionButton"..i])
+		_G["MultiBarRightButton"..i]:SetAttribute("showgrid", 1)
 		ActionButton_ShowGrid(_G["MultiBarRightButton"..i])
+		_G["MultiBarLeftButton"..i]:SetAttribute("showgrid", 1)
 		ActionButton_ShowGrid(_G["MultiBarLeftButton"..i])
+		_G["MultiBarBottomRightButton"..i]:SetAttribute("showgrid", 1)
 		ActionButton_ShowGrid(_G["MultiBarBottomRightButton"..i])
+		_G["MultiBarBottomLeftButton"..i]:SetAttribute("showgrid", 1)
 		ActionButton_ShowGrid(_G["MultiBarBottomLeftButton"..i])
+	end
+end)
+
+----------------------------------------------------------------------------------------
+--	Setup Main Action Bar by Tukz
+----------------------------------------------------------------------------------------
+
+--[[ 
+	Bonus bar classes id
+
+	DRUID: Caster: 0, Cat: 1, Tree of Life: 2, Bear: 3, Moonkin: 4
+	WARRIOR: Battle Stance: 1, Defensive Stance: 2, Berserker Stance: 3 
+	ROGUE: Normal: 0, Stealthed: 1
+	PRIEST: Normal: 0, Shadowform: 1
+	
+	When Possessing a Target: 5
+]]--
+
+local Page = {
+	["DRUID"] = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] %s; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;",
+	["WARRIOR"] = "[bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9;",
+	["PRIEST"] = "[bonusbar:1] 7;",
+	["ROGUE"] = "[bonusbar:1] 7; [form:3] 10;",
+	["WARLOCK"] = "[form:2] 10;",
+	["DEFAULT"] = "[bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6; [bonusbar:5] 11;",
+}
+
+local GetBar = function()
+	local condition = Page["DEFAULT"]
+	local class = select(2, UnitClass('player'))
+	local page = Page[class]
+	if page then
+		if class == "DRUID" then
+			-- Handles prowling, prowling has no real stance, so this is a hack which utilizes the Tree of Life bar for non-resto druids
+			if IsSpellKnown(33891) then -- Tree of Life form
+				page = page:format(7)
+			else
+				page = page:format(8)
+			end
+		end
+		condition = condition.." "..page
+	end
+	condition = condition.." 1"
+	return condition
+end
+
+bar1:RegisterEvent("PLAYER_LOGIN")
+bar1:RegisterEvent("PLAYER_ENTERING_WORLD")
+bar1:RegisterEvent("PLAYER_TALENT_UPDATE")
+bar1:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+bar1:RegisterEvent("KNOWN_CURRENCY_TYPES_UPDATE")
+bar1:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
+bar1:RegisterEvent("BAG_UPDATE")
+bar1:SetScript("OnEvent", function(self, event, ...)
+	if event == "PLAYER_LOGIN" then
+		local button
+		for i = 1, NUM_ACTIONBAR_BUTTONS do
+			button = _G["ActionButton"..i]
+			self:SetFrameRef("ActionButton"..i, button)
+		end	
+		self:Execute([[
+			buttons = table.new()
+			for i = 1, 12 do
+				table.insert(buttons, self:GetFrameRef("ActionButton"..i))
+			end
+		]])
+		self:SetAttribute("_onstate-page", [[ 
+			for i, button in ipairs(buttons) do
+				button:SetAttribute("actionpage", tonumber(newstate))
+			end
+		]])
+		RegisterStateDriver(self, "page", GetBar())
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		MainMenuBar_UpdateKeyRing()
+		for i = 1, NUM_ACTIONBAR_BUTTONS do
+			_G["ActionButton"..i]:SetParent(UIParent)
+		end
+	elseif event == "PLAYER_TALENT_UPDATE" or event == "ACTIVE_TALENT_GROUP_CHANGED" then
+		if not InCombatLockdown() then
+			RegisterStateDriver(self, "page", GetBar())
+		end
+	else
+		MainMenuBar_OnEvent(self, event, ...)
 	end
 end)

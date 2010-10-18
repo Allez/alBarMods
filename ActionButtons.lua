@@ -106,7 +106,7 @@ local setStyle = function(bname)
 		self.hover = false
 		modSetBorderColor(self)
 	end)
-	
+
 	icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 	icon:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
 	icon:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
