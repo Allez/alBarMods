@@ -124,7 +124,7 @@ local modActionButtonDown = function(id)
 end
   
 local modActionButtonUp = function(id)
-	local button;
+	local button
 	if BonusActionBarFrame:IsShown() then
 		button = _G["BonusActionButton"..id]
 	else
@@ -299,7 +299,6 @@ hooksecurefunc("ActionButtonUp", modActionButtonUp)
 hooksecurefunc("MultiActionButtonDown", modMultiActionButtonDown)
 hooksecurefunc("MultiActionButtonUp", modMultiActionButtonUp)
 hooksecurefunc("ActionButton_UpdateHotkeys", modActionButton_UpdateHotkeys)
-hooksecurefunc("ShapeshiftBar_OnLoad", modShapeshiftBar_UpdateState)
 hooksecurefunc("ShapeshiftBar_UpdateState", modShapeshiftBar_UpdateState)
 hooksecurefunc("PetActionBar_Update", modPetActionBar_Update)
 ActionButton_OnUpdate = modActionButton_OnUpdate

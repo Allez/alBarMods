@@ -10,6 +10,7 @@ local frame_positions = {
 	[6]	=	{ a = "BOTTOM",     x = 0,   y = 101 },	-- PetBar
 	[7]	=	{ a = "BOTTOMLEFT", x = 12,  y = 210 },	-- ShapeShiftBar
 	[8]	=	{ a = "LEFT",       x = 251, y = -6  },	-- VehicleBar
+	[9]	=	{ a = "BOTTOMLEFT", x = 12,  y = 210 }, -- TotemBar
 }
 -- Config end
 
@@ -53,6 +54,7 @@ local bar5 = CreateBarFrame("mod_MultiBarRightBar", frame_positions[5])
 local bar6 = CreateBarFrame("mod_PetBar", frame_positions[6])
 local bar7 = CreateBarFrame("mod_ShapeShiftBar", frame_positions[7])
 local bar8 = CreateBarFrame("mod_VehicleBar", frame_positions[8])
+local bar9 = CreateBarFrame("mod_TotemBar", frame_positions[9])
 
 local VehicleLeaveButton = CreateFrame("Button", "VehicleLeaveButton1", UIParent)
 VehicleLeaveButton:SetNormalTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up")
@@ -79,6 +81,7 @@ for _, v in pairs({
 	MultiBarRight,
 	PetActionBarFrame,
 	ShapeshiftBarFrame,
+	MultiCastActionBarFrame,
 }) do
 	v:SetParent(UIParent)
 	v:SetWidth(0.01)
@@ -92,6 +95,8 @@ SetButtons(bar5, "MultiBarRightButton", NUM_MULTIBAR_BUTTONS, "V")
 SetButtons(bar6, "PetActionButton", NUM_PET_ACTION_SLOTS, "H")
 SetButtons(bar7, "ShapeshiftButton", NUM_SHAPESHIFT_SLOTS, "H")
 SetButtons(bar8, "VehicleLeaveButton", 1, "H", 45)
+SetButtons(bar9, "MultiCastSlotButton", 4, "H")
+SetButtons(bar9, "MultiCastActionButton", 4, "H")
 
 hooksecurefunc("ShapeshiftBar_Update", function()
 	if GetNumShapeshiftForms() == 1 and not InCombatLockdown() then
@@ -156,7 +161,7 @@ end)
 ]]--
 
 local Page = {
-	["DRUID"] = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] %s; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;",
+	["DRUID"] = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] 8; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;",
 	["WARRIOR"] = "[bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9;",
 	["PRIEST"] = "[bonusbar:1] 7;",
 	["ROGUE"] = "[bonusbar:1] 7; [form:3] 10;",
@@ -169,14 +174,6 @@ local GetBar = function()
 	local class = select(2, UnitClass('player'))
 	local page = Page[class]
 	if page then
-		if class == "DRUID" then
-			-- Handles prowling, prowling has no real stance, so this is a hack which utilizes the Tree of Life bar for non-resto druids
-			if IsSpellKnown(33891) then -- Tree of Life form
-				page = page:format(7)
-			else
-				page = page:format(8)
-			end
-		end
 		condition = condition.." "..page
 	end
 	condition = condition.." 1"
