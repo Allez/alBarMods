@@ -1,6 +1,7 @@
 -- Config start
-local size = 27
-local spacing = 3
+local size = 23
+local spacing = 7
+local showgrid = true
 local frame_positions = {
 	[1]	=	{ a = "BOTTOM",     x = 0,   y = 11  },	-- MainBar
 	[2]	=	{ a = "BOTTOM",     x = 0,   y = 71  },	-- MultiBarBottomLeft
@@ -14,15 +15,40 @@ local frame_positions = {
 }
 -- Config end
 
+local config = {
+	["Button size"] = size,
+	["Spacing"] = spacing,
+	["Show grid"] = showgrid,
+}
+if UIConfig then
+	UIConfig["Action bars"] = config
+end
+
+local bars = {}
+local move = false
 
 local CreateBarFrame = function(name, pos)
 	local bar = CreateFrame("Frame", name, UIParent, "SecureHandlerStateTemplate")
 	bar:SetPoint(pos.a, pos.x, pos.y)
+	bar:SetMovable(true)
+	bar:SetUserPlaced(true)
+	bar:SetBackdrop({
+		bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
+		insets = {top = 0, left = 0, bottom = 0, right = 0},
+	})
+	bar:SetBackdropColor(0, 0, 0, 0)
+	bar.label = bar:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
+	bar.label:SetPoint("CENTER")
+	bar.label:SetText(name)
+	bar.label:Hide()
+	tinsert(bars, bar)
+	if UIMovableFrames then tinsert(UIMovableFrames, bar) end
 	return bar
 end
 
 local SetButtons = function(bar, button, num, orient, bsize)
-	local size = bsize or size
+	local size = bsize or config["Button size"]
+	local spacing = config["Spacing"]
 	for i = 1, num do
 		_G[button..i]:ClearAllPoints()
 		_G[button..i]:SetWidth(size)
@@ -81,22 +107,10 @@ for _, v in pairs({
 	MultiBarRight,
 	PetActionBarFrame,
 	ShapeshiftBarFrame,
-	MultiCastActionBarFrame,
 }) do
 	v:SetParent(UIParent)
 	v:SetWidth(0.01)
 end
-
-SetButtons(bar1, "ActionButton", NUM_ACTIONBAR_BUTTONS, "H")
-SetButtons(bar2, "MultiBarBottomLeftButton", NUM_MULTIBAR_BUTTONS, "H")
-SetButtons(bar3, "MultiBarBottomRightButton", NUM_MULTIBAR_BUTTONS, "H")
-SetButtons(bar4, "MultiBarLeftButton", NUM_MULTIBAR_BUTTONS, "V")
-SetButtons(bar5, "MultiBarRightButton", NUM_MULTIBAR_BUTTONS, "V")
-SetButtons(bar6, "PetActionButton", NUM_PET_ACTION_SLOTS, "H")
-SetButtons(bar7, "ShapeshiftButton", NUM_SHAPESHIFT_SLOTS, "H")
-SetButtons(bar8, "VehicleLeaveButton", 1, "H", 45)
-SetButtons(bar9, "MultiCastSlotButton", 4, "H")
-SetButtons(bar9, "MultiCastActionButton", 4, "H")
 
 hooksecurefunc("ShapeshiftBar_Update", function()
 	if GetNumShapeshiftForms() == 1 and not InCombatLockdown() then
@@ -126,22 +140,50 @@ for _, obj in pairs({
 end
 
 local frame = CreateFrame("Frame")
-frame:RegisterEvent("PLAYER_LOGIN")
+frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:SetScript("OnEvent", function(self, event)
-	ActionButton_HideGrid = function() end
-	for i = 1, 12 do
-		_G["ActionButton"..i]:SetAttribute("showgrid", 1)
-		ActionButton_ShowGrid(_G["ActionButton"..i])
-		_G["BonusActionButton"..i]:SetAttribute("showgrid", 1)
-		ActionButton_ShowGrid(_G["BonusActionButton"..i])
-		_G["MultiBarRightButton"..i]:SetAttribute("showgrid", 1)
-		ActionButton_ShowGrid(_G["MultiBarRightButton"..i])
-		_G["MultiBarLeftButton"..i]:SetAttribute("showgrid", 1)
-		ActionButton_ShowGrid(_G["MultiBarLeftButton"..i])
-		_G["MultiBarBottomRightButton"..i]:SetAttribute("showgrid", 1)
-		ActionButton_ShowGrid(_G["MultiBarBottomRightButton"..i])
-		_G["MultiBarBottomLeftButton"..i]:SetAttribute("showgrid", 1)
-		ActionButton_ShowGrid(_G["MultiBarBottomLeftButton"..i])
+	self:UnregisterEvent(event)
+	if config["Show grid"] then
+		ActionButton_HideGrid = function() end
+		for i = 1, 12 do
+			_G["ActionButton"..i]:SetAttribute("showgrid", 1)
+			ActionButton_ShowGrid(_G["ActionButton"..i])
+			_G["BonusActionButton"..i]:SetAttribute("showgrid", 1)
+			ActionButton_ShowGrid(_G["BonusActionButton"..i])
+			_G["MultiBarRightButton"..i]:SetAttribute("showgrid", 1)
+			ActionButton_ShowGrid(_G["MultiBarRightButton"..i])
+			_G["MultiBarLeftButton"..i]:SetAttribute("showgrid", 1)
+			ActionButton_ShowGrid(_G["MultiBarLeftButton"..i])
+			_G["MultiBarBottomRightButton"..i]:SetAttribute("showgrid", 1)
+			ActionButton_ShowGrid(_G["MultiBarBottomRightButton"..i])
+			_G["MultiBarBottomLeftButton"..i]:SetAttribute("showgrid", 1)
+			ActionButton_ShowGrid(_G["MultiBarBottomLeftButton"..i])
+		end
+	end
+	SetButtons(bar1, "ActionButton", NUM_ACTIONBAR_BUTTONS, "H")
+	SetButtons(bar2, "MultiBarBottomLeftButton", NUM_MULTIBAR_BUTTONS, "H")
+	SetButtons(bar3, "MultiBarBottomRightButton", NUM_MULTIBAR_BUTTONS, "H")
+	SetButtons(bar4, "MultiBarLeftButton", NUM_MULTIBAR_BUTTONS, "V")
+	SetButtons(bar5, "MultiBarRightButton", NUM_MULTIBAR_BUTTONS, "V")
+	SetButtons(bar6, "PetActionButton", NUM_PET_ACTION_SLOTS, "H")
+	SetButtons(bar7, "ShapeshiftButton", NUM_SHAPESHIFT_SLOTS, "H")
+	SetButtons(bar8, "VehicleLeaveButton", 1, "H", 45)
+	if MultiCastActionBarFrame then
+		MultiCastActionBarFrame:SetScript("OnUpdate", nil)
+		MultiCastActionBarFrame:SetScript("OnShow", nil)
+		MultiCastActionBarFrame:SetScript("OnHide", nil)
+		MultiCastActionBarFrame:SetParent(bar9)
+		MultiCastActionBarFrame:ClearAllPoints()
+		MultiCastActionBarFrame:SetPoint("BOTTOMLEFT", bar9, 0, 0)
+		for i = 1, 4 do
+			local b = _G["MultiCastSlotButton"..i]
+			local b2 = _G["MultiCastActionButton"..i]
+			b:ClearAllPoints()
+			b:SetAllPoints(b2)
+		end
+		MultiCastActionBarFrame.SetParent = function() end
+		MultiCastActionBarFrame.SetPoint = function() end
+		MultiCastRecallSpellButton.SetPoint = function() end
 	end
 end)
 
@@ -166,7 +208,7 @@ local Page = {
 	["PRIEST"] = "[bonusbar:1] 7;",
 	["ROGUE"] = "[bonusbar:1] 7; [form:3] 10;",
 	["WARLOCK"] = "[form:2] 10;",
-	["DEFAULT"] = "[bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6; [bonusbar:5] 11;",
+	["DEFAULT"] = "[bonusbar:5] 11; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;",
 }
 
 local GetBar = function()
@@ -219,3 +261,35 @@ bar1:SetScript("OnEvent", function(self, event, ...)
 		MainMenuBar_OnEvent(self, event, ...)
 	end
 end)
+
+SlashCmdList["alBars"] = function(msg)
+	if not move then
+		for _, bar in pairs(bars) do
+			bar.strata = bar:GetFrameStrata()
+			bar:SetFrameStrata("TOOLTIP")
+			bar:SetBackdropColor(0, 0.9, 0, 0.4)
+			bar.label:Show()
+			bar:EnableMouse(true)
+			bar:RegisterForDrag("LeftButton")
+			bar:SetScript("OnDragStart", function(self, button)
+				self:StartMoving()
+			end)
+			bar:SetScript("OnDragStop", function(self, button)
+				self:StopMovingOrSizing()
+			end)
+		end
+		move = true
+	else
+		for _, bar in pairs(bars) do
+			bar:RegisterForDrag(nil)
+			bar:EnableMouse(false)
+			bar:SetFrameStrata(bar.strata)
+			bar:SetBackdropColor(0, 0, 0, 0)
+			bar.label:Hide()
+			bar:SetScript("OnDragStart", nil)
+			bar:SetScript("OnDragStop", nil)
+		end
+		move = false
+	end
+end
+SLASH_alBars1 = "/ab"

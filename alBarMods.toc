@@ -3,7 +3,7 @@
 ## Author: Allez
 ## Notes: Action bar mod
 ## Version 40000.1
-## Credits: roth
+## OptionalDeps: alInterface
 
 embeds.xml
 ActionBars.lua
