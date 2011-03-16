@@ -42,7 +42,6 @@ end
 
 local SetPaging = function(bar)
 	bar:RegisterEvent("PLAYER_LOGIN")
-	bar:RegisterEvent("PLAYER_ENTERING_WORLD")
 	bar:RegisterEvent("PLAYER_TALENT_UPDATE")
 	bar:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 	bar:SetScript("OnEvent", function(self, event, ...)
@@ -64,9 +63,7 @@ local SetPaging = function(bar)
 				end
 			]])
 			RegisterStateDriver(self, "page", GetBar())
-		elseif event == "PLAYER_ENTERING_WORLD" then
-			MainMenuBar_UpdateKeyRing()
-		elseif event == "PLAYER_TALENT_UPDATE" or event == "ACTIVE_TALENT_GROUP_CHANGED" then
+		else
 			if not InCombatLockdown() then
 				RegisterStateDriver(self, "page", GetBar())
 			end
