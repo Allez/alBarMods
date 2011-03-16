@@ -6,5 +6,10 @@
 ## OptionalDeps: alInterface
 
 embeds.xml
-ActionBars.lua
-ActionButtons.lua
+shared.lua
+actionBars.lua
+classBar.lua
+petBar.lua
+totemBar.lua
+vehicleBar.lua
+style.lua
