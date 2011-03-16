@@ -1,0 +1,8 @@
+
+local bar = CreateBar("uiPetBar")
+bar:SetPoint(unpack(defaults[i].pos))
+bar.rows = 1
+bar.buttons = {}
+for i = 1, NUM_PET_ACTION_SLOTS do
+	tinsert(bar.buttons, _G["PetActionButton"..i])
+end
