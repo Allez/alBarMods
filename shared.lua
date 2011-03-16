@@ -13,6 +13,8 @@ if UIConfig then
 	UIConfig["Action bars"] = config
 end
 
+local bars = {}
+
 SetButtons = function(bar, bsize)
 	local size = config["Button size"]
 	local spacing = config["Spacing"]
@@ -44,18 +46,10 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:SetScript("OnEvent", function(self, event)
 	self:UnregisterEvent(event)
-	if config["Show grid"] then
-		ActionButton_HideGrid = function() end
-		for i = 1, 60 do
-			local button = GetButton(i)
-			button:SetAttribute("showgrid", 1)
-			ActionButton_ShowGrid(button)
-		end
-	end
 	for _, bar in pairs(bars) do
 		SetButtons(bar)
 	end
-end
+end)
 
 for _, v in pairs({
 	MultiBarBottomLeft,
@@ -96,26 +90,16 @@ SlashCmdList["alBars"] = function(msg)
 			bar.strata = bar:GetFrameStrata()
 			bar:SetFrameStrata("TOOLTIP")
 			bar:SetBackdropColor(0, 0.9, 0, 0.4)
-			bar.label:Show()
 			bar:EnableMouse(true)
-			bar:RegisterForDrag("LeftButton")
-			bar:SetScript("OnDragStart", function(self, button)
-				self:StartMoving()
-			end)
-			bar:SetScript("OnDragStop", function(self, button)
-				self:StopMovingOrSizing()
-			end)
+			
 		end
 		move = true
 	else
 		for _, bar in pairs(bars) do
-			bar:RegisterForDrag(nil)
 			bar:EnableMouse(false)
 			bar:SetFrameStrata(bar.strata)
 			bar:SetBackdropColor(0, 0, 0, 0)
-			bar.label:Hide()
-			bar:SetScript("OnDragStart", nil)
-			bar:SetScript("OnDragStop", nil)
+			
 		end
 		move = false
 	end
