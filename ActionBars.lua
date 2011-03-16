@@ -4,7 +4,7 @@ local defaults = {
 	[2] = {pos = {"BOTTOM", 0, 41}, rows = 1},
 	[3] = {pos = {"BOTTOM", 0, 71}, rows = 1},
 	[4] = {pos = {"RIGHT", -11, 0}, rows = 12},
-	[5] = {pos = {"RIGHT", -31, 0}, rows = 12},
+	[5] = {pos = {"RIGHT", -41, 0}, rows = 12},
 }
 
 local GetButton = function(id)
@@ -81,12 +81,9 @@ for i = 1, 5 do
 	bar.split = i==3
 	bar.rows = defaults[i].rows
 	if i == 1 then SetPaging(bar) end
-end
-
-for _, bar in pairs(bars) do
 	bar.buttons = {}
-	for i = 1, 12 do
-		tinsert(bar.buttons, GetButton((bar.id-1)*12+i))
+	for n = 1, 12 do
+		tinsert(bar.buttons, GetButton((i-1)*12+n))
 	end
 end
 
@@ -94,15 +91,10 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:SetScript("OnEvent", function(self, event)
 	self:UnregisterEvent(event)
-	if config["Show grid"] then
-		ActionButton_HideGrid = function() end
-		for i = 1, 60 do
-			local button = GetButton(i)
-			button:SetAttribute("showgrid", 1)
-			ActionButton_ShowGrid(button)
-		end
-	end
-	for i = 1, NUM_ACTIONBAR_BUTTONS do
-		_G["ActionButton"..i]:SetParent(UIParent)
+	for i = 1, 12 do
+		local button = GetButton(i)
+		button:SetAttribute("showgrid", 1)
+		button:SetParent(UIParent)
+		ActionButton_ShowGrid(button)
 	end
 end)
